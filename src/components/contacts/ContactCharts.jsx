@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid, Typography } from '@mui/material'
+import { Box, Card, CardContent, Grid, Typography } from '@mui/material'
 import { Pie, Doughnut } from 'react-chartjs-2'
 import {
   ArcElement,
@@ -10,6 +10,7 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend)
 
 const chartColors = ['#2563eb', '#14b8a6', '#0f172a', '#6366f1', '#f59e0b', '#10b981']
+const chartOptions = { responsive: true, maintainAspectRatio: false }
 
 function ContactCharts({ contacts }) {
   const tagCount = {}
@@ -36,24 +37,51 @@ function ContactCharts({ contacts }) {
   }
 
   return (
-    <Grid container spacing={2} sx={{ mb: 3 }}>
-      <Grid item xs={12} md={6}>
+    <Grid
+      container
+      sx={{
+        mb: 3,
+        width: '100%',
+        justifyContent: { xs: 'flex-start', md: 'space-evenly' },
+        alignItems: 'stretch',
+      }}
+    >
+      <Grid
+        item
+        xs={12}
+        sx={{
+          mb: { xs: 2, md: 0 },
+          flexBasis: { xs: '100%', md: '47.5%' },
+          maxWidth: { xs: '100%', md: '47.5%' },
+        }}
+      >
         <Card>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Contacts by Tag
             </Typography>
-            <Pie data={tagData} />
+            <Box sx={{ height: { xs: 220, md: 256 } }}>
+              <Pie data={tagData} options={chartOptions} />
+            </Box>
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={6}>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          flexBasis: { xs: '100%', md: '47.5%' },
+          maxWidth: { xs: '100%', md: '47.5%' },
+        }}
+      >
         <Card>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Contacts by Company
             </Typography>
-            <Doughnut data={companyData} />
+            <Box sx={{ height: { xs: 220, md: 256 } }}>
+              <Doughnut data={companyData} options={chartOptions} />
+            </Box>
           </CardContent>
         </Card>
       </Grid>

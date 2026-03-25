@@ -14,7 +14,7 @@ function StatCards({ contacts }) {
   ]
 
   return (
-    <Grid container spacing={2} sx={{ mb: 3 }}>
+    <Grid container spacing={2} sx={{ mb: 3, justifyContent: 'center', maxWidth: 900, mx: 'auto' }}>
       {stats.map((stat) => (
         <Grid key={stat.label} item xs={12} sm={4}>
           <Card>
