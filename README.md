@@ -48,26 +48,23 @@ To ensure the application is highly optimized, scalable, and ready for future gr
 
 ## ⚡ Implemented Optimization Techniques
 
-### a) React.memo
-Prevents unnecessary re-renders by memoizing components that receive unchanged props.
-
-### b) useMemo
-Optimizes performance by caching expensive computations such as filtered or derived data.
-
-### c) useCallback
-Maintains stable function references to avoid triggering unwanted re-renders in child components.
-
-### d) Lazy Loading (React.lazy + Suspense)
+### a) Lazy Loading (React.lazy + Suspense)
 Improves initial load performance by loading heavy components (e.g., contact details view) only when required.
 
-### e) Debouncing
+### b) Debouncing
 Enhances user experience by limiting frequent updates during rapid input (e.g., search and filters).
 
-### f) Proper Keys in Lists
+### c) useMemo
+Optimizes performance by caching expensive computations such as filtered or derived data.
+
+### d) useCallback
+Maintains stable function references to avoid triggering unwanted re-renders in child components.
+
+### e) Proper Keys in Lists
 Ensures efficient DOM reconciliation and prevents rendering issues in dynamic lists.
 
-### g) Redux Toolkit (State Management)
+### f) Redux Toolkit (State Management)
 Eliminates prop drilling by organizing global state (Contacts, Emails, SMS, Notes) into well-structured slices.
 
-### h) localStorage Persistence
+### g) localStorage Persistence
 Provides data persistence by storing Contacts, Emails, SMS, and Notes locally, ensuring data remains intact across page refreshes and sessions.
