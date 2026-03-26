@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { FormControl, InputLabel, MenuItem, Select, Stack } from '@mui/material'
 
 function ContactFilters({
@@ -47,4 +48,4 @@ function ContactFilters({
   )
 }
 
-export default ContactFilters
+export default memo(ContactFilters)

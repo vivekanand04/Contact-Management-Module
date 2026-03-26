@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react'
 import { Box, Card, CardContent, Grid, Typography } from '@mui/material'
 import { Pie, Doughnut } from 'react-chartjs-2'
 import {
@@ -13,28 +14,32 @@ const chartColors = ['#2563eb', '#14b8a6', '#0f172a', '#6366f1', '#f59e0b', '#10
 const chartOptions = { responsive: true, maintainAspectRatio: false }
 
 function ContactCharts({ contacts }) {
-  const tagCount = {}
-  const companyCount = {}
+  const { tagData, companyData } = useMemo(() => {
+    const tagCount = {}
+    const companyCount = {}
 
-  contacts.forEach((contact) => {
-    const company = contact.company?.trim() || 'Unassigned'
-    companyCount[company] = (companyCount[company] || 0) + 1
-    ;(contact.tags?.length ? contact.tags : ['Untagged']).forEach((tag) => {
-      tagCount[tag] = (tagCount[tag] || 0) + 1
+    contacts.forEach((contact) => {
+      const company = contact.company?.trim() || 'Unassigned'
+      companyCount[company] = (companyCount[company] || 0) + 1
+      ;(contact.tags?.length ? contact.tags : ['Untagged']).forEach((tag) => {
+        tagCount[tag] = (tagCount[tag] || 0) + 1
+      })
     })
-  })
 
-  const tagLabels = Object.keys(tagCount)
-  const companyLabels = Object.keys(companyCount)
+    const tagLabels = Object.keys(tagCount)
+    const companyLabels = Object.keys(companyCount)
 
-  const tagData = {
-    labels: tagLabels,
-    datasets: [{ data: tagLabels.map((label) => tagCount[label]), backgroundColor: chartColors }],
-  }
-  const companyData = {
-    labels: companyLabels,
-    datasets: [{ data: companyLabels.map((label) => companyCount[label]), backgroundColor: chartColors }],
-  }
+    return {
+      tagData: {
+        labels: tagLabels,
+        datasets: [{ data: tagLabels.map((label) => tagCount[label]), backgroundColor: chartColors }],
+      },
+      companyData: {
+        labels: companyLabels,
+        datasets: [{ data: companyLabels.map((label) => companyCount[label]), backgroundColor: chartColors }],
+      },
+    }
+  }, [contacts])
 
   return (
     <Grid
@@ -89,4 +94,4 @@ function ContactCharts({ contacts }) {
   )
 }
 
-export default ContactCharts
+export default memo(ContactCharts)

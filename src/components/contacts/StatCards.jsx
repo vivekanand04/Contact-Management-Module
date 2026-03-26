@@ -1,11 +1,15 @@
+import { memo, useMemo } from 'react'
 import { Card, CardContent, Grid, Typography } from '@mui/material'
 
 const cardStyles = { p: 3, border: '1px solid', borderColor: 'divider' }
 
 function StatCards({ contacts }) {
-  const total = contacts.length
-  const withCompany = contacts.filter((c) => c.company).length
-  const tagged = contacts.filter((c) => c.tags?.length).length
+  const { total, withCompany, tagged } = useMemo(() => {
+    const total = contacts.length
+    const withCompany = contacts.filter((c) => c.company).length
+    const tagged = contacts.filter((c) => c.tags?.length).length
+    return { total, withCompany, tagged }
+  }, [contacts])
 
   const stats = [
     { label: 'Total Contacts', value: total },
@@ -33,4 +37,4 @@ function StatCards({ contacts }) {
   )
 }
 
-export default StatCards
+export default memo(StatCards)

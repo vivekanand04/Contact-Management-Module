@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Avatar,
@@ -17,6 +18,8 @@ import {
 import { motion } from 'framer-motion'
 import { ChevronRight, MoveHorizontal, Pencil, Trash2 } from 'lucide-react'
 
+const MotionTr = motion.tr
+
 function ContactTable({ contacts, onEdit, onDelete }) {
   const navigate = useNavigate()
 
@@ -35,7 +38,7 @@ function ContactTable({ contacts, onEdit, onDelete }) {
         </TableHead>
         <TableBody>
           {contacts.map((contact) => (
-            <motion.tr
+            <MotionTr
               key={contact.id}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -110,7 +113,7 @@ function ContactTable({ contacts, onEdit, onDelete }) {
                   </Box>
                 </Stack>
               </TableCell>
-            </motion.tr>
+            </MotionTr>
           ))}
         </TableBody>
       </Table>
@@ -118,4 +121,4 @@ function ContactTable({ contacts, onEdit, onDelete }) {
   )
 }
 
-export default ContactTable
+export default memo(ContactTable)

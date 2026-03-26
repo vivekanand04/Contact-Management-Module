@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion'
 import { LayoutGrid, List, Plus, Search } from 'lucide-react'
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
+import { useDispatch, useSelector } from 'react-redux'
 import AppShell from '../components/layout/AppShell'
 import StatCards from '../components/contacts/StatCards'
 import ContactFormDialog from '../components/contacts/ContactFormDialog'
@@ -22,6 +23,8 @@ import ContactTable from '../components/contacts/ContactTable'
 import ContactCardGrid from '../components/contacts/ContactCardGrid'
 import ContactFilters from '../components/contacts/ContactFilters'
 import EmptyState from '../components/contacts/EmptyState'
+import { createContactAndToast, deleteContactAndToast, updateContactAndToast } from '../store/contactsThunks'
+import { useDebouncedValue } from '../utils/useDebouncedValue'
 
 const STORAGE_KEY = 'contact_management_list_preferences'
 const ContactCharts = lazy(() => import('../components/contacts/ContactCharts'))
@@ -42,16 +45,20 @@ const readStoredPreferences = () => {
   }
 }
 
-function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
-  const storedPrefs = useMemo(readStoredPreferences, [])
+function ContactListPage() {
+  const dispatch = useDispatch()
+  const contacts = useSelector((state) => state.contacts)
+
+  const storedPrefs = useMemo(() => readStoredPreferences(), [])
   const [search, setSearch] = useState(storedPrefs.search)
   const [viewMode, setViewMode] = useState(storedPrefs.viewMode)
   const [selectedCompany, setSelectedCompany] = useState(storedPrefs.selectedCompany)
   const [selectedTag, setSelectedTag] = useState(storedPrefs.selectedTag)
-  const [loading] = useState(false)
+  const [loading] = useState(false) // Placeholder for future server-side loading
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editContact, setEditContact] = useState(null)
   const isXs = useMediaQuery('(max-width:599px)')
+  const debouncedSearch = useDebouncedValue(search, 250)
 
   const companies = useMemo(
     () => [...new Set(contacts.map((contact) => contact.company?.trim()).filter(Boolean))].sort(),
@@ -64,7 +71,7 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
   )
 
   const filteredContacts = useMemo(() => {
-    const query = search.toLowerCase().trim()
+    const query = debouncedSearch.toLowerCase().trim()
     return contacts.filter((contact) =>
       `${contact.firstName} ${contact.lastName} ${contact.email} ${contact.phone} ${contact.company || ''}`
         .toLowerCase()
@@ -72,7 +79,7 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
       (selectedCompany === 'all' || (contact.company || '') === selectedCompany) &&
       (selectedTag === 'all' || contact.tags?.includes(selectedTag)),
     )
-  }, [contacts, search, selectedCompany, selectedTag])
+  }, [contacts, debouncedSearch, selectedCompany, selectedTag])
 
   useEffect(() => {
     localStorage.setItem(
@@ -81,24 +88,47 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
     )
   }, [search, viewMode, selectedCompany, selectedTag])
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setSearch('')
     setSelectedCompany('all')
     setSelectedTag('all')
-  }
+  }, [])
 
-  const openCreateDialog = () => {
+  const openCreateDialog = useCallback(() => {
     setEditContact(null)
     setDialogOpen(true)
-  }
+  }, [])
 
-  const openEditDialog = (contact) => {
+  const openEditDialog = useCallback((contact) => {
     setEditContact({
       ...contact,
       tags: contact.tags?.join(', ') || '',
     })
     setDialogOpen(true)
-  }
+  }, [])
+
+  const handleCloseDialog = useCallback(() => {
+    setDialogOpen(false)
+  }, [])
+
+  const handleDelete = useCallback(
+    (id) => {
+      dispatch(deleteContactAndToast(id))
+    },
+    [dispatch],
+  )
+
+  const handleSubmit = useCallback(
+    (payload) => {
+      if (!editContact) {
+        dispatch(createContactAndToast(payload))
+        return
+      }
+
+      dispatch(updateContactAndToast({ id: editContact.id, payload }))
+    },
+    [dispatch, editContact],
+  )
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -238,7 +268,7 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                <ContactTable contacts={filteredContacts} onEdit={openEditDialog} onDelete={onDelete} />
+                <ContactTable contacts={filteredContacts} onEdit={openEditDialog} onDelete={handleDelete} />
               </motion.div>
             ) : (
               <motion.div
@@ -248,7 +278,7 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                <ContactCardGrid contacts={filteredContacts} onEdit={openEditDialog} onDelete={onDelete} />
+                <ContactCardGrid contacts={filteredContacts} onEdit={openEditDialog} onDelete={handleDelete} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -260,11 +290,12 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
         )}
 
         <ContactFormDialog
+          key={dialogOpen ? (editContact ? `edit-${editContact.id}` : 'create') : 'closed'}
           open={dialogOpen}
           mode={editContact ? 'edit' : 'create'}
           initialData={editContact}
-          onClose={() => setDialogOpen(false)}
-          onSubmit={(payload) => (editContact ? onUpdate(editContact.id, payload) : onCreate(payload))}
+          onClose={handleCloseDialog}
+          onSubmit={handleSubmit}
         />
       </AppShell>
     </motion.div>

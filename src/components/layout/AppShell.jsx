@@ -2,13 +2,15 @@ import { AppBar, Box, Container, Toolbar, Typography, useMediaQuery } from '@mui
 import { motion } from 'framer-motion'
 import { Contact } from 'lucide-react'
 
+const MotionDiv = motion.div
+
 function AppShell({ title, subtitle, children, actions }) {
   const hideSubtitle = useMediaQuery('(max-width:799px)')
 
   return (
     <Box sx={{ minHeight: '100vh', py: { xs: 2, md: 4 } }}>
       <Container maxWidth="lg">
-        <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+        <MotionDiv initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
           <AppBar position="static" color="transparent" elevation={0} sx={{ borderRadius: 3, mb: 3 }}>
             <Toolbar
               sx={{
@@ -37,7 +39,7 @@ function AppShell({ title, subtitle, children, actions }) {
               ) : null}
             </Toolbar>
           </AppBar>
-        </motion.div>
+        </MotionDiv>
         {children}
       </Container>
     </Box>

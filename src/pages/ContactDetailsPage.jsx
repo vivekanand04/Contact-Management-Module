@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   Avatar,
@@ -15,17 +15,79 @@ import {
 } from '@mui/material'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
 import AppShell from '../components/layout/AppShell'
 import TimelineSection from '../components/contacts/TimelineSection'
 import EmptyState from '../components/contacts/EmptyState'
+import { appendTimelineEntryAndToast } from '../store/contactsThunks'
 
-function ContactDetailsPage({ contactMap, onAddNote, onAddEmail, onAddSms }) {
+const MotionDiv = motion.div
+
+function ContactDetailsPage() {
   const { contactId } = useParams()
   const navigate = useNavigate()
   const [tab, setTab] = useState(0)
   const isWideLayout = useMediaQuery('(min-width:801px)')
+  const dispatch = useDispatch()
+  const contacts = useSelector((state) => state.contacts)
+
+  const contactMap = useMemo(() => new Map(contacts.map((contact) => [contact.id, contact])), [contacts])
 
   const contact = useMemo(() => contactMap.get(contactId), [contactId, contactMap])
+  const addNote = useCallback(
+    (payload) => {
+      dispatch(appendTimelineEntryAndToast({ contactId, section: 'notes', payload }))
+    },
+    [dispatch, contactId],
+  )
+
+  const addEmail = useCallback(
+    (payload) => {
+      dispatch(appendTimelineEntryAndToast({ contactId, section: 'emails', payload }))
+    },
+    [dispatch, contactId],
+  )
+
+  const addSms = useCallback(
+    (payload) => {
+      dispatch(appendTimelineEntryAndToast({ contactId, section: 'sms', payload }))
+    },
+    [dispatch, contactId],
+  )
+
+  const tabs = useMemo(() => {
+    if (!contact) return []
+
+    return [
+      {
+        label: 'Notes',
+        node: (
+          <TimelineSection
+            entries={contact.notes}
+            placeholder="Write a note"
+            actionLabel="Add Note"
+            onAdd={addNote}
+          />
+        ),
+      },
+      {
+        label: 'Emails',
+        node: (
+          <TimelineSection
+            entries={contact.emails}
+            placeholder="Email summary"
+            actionLabel="Add Email"
+            onAdd={addEmail}
+          />
+        ),
+      },
+      {
+        label: 'SMS',
+        node: <TimelineSection entries={contact.sms} placeholder="SMS update" actionLabel="Add SMS" onAdd={addSms} />,
+      },
+    ]
+  }, [addEmail, addNote, addSms, contact])
+
   if (!contact) {
     return (
       <AppShell
@@ -41,44 +103,8 @@ function ContactDetailsPage({ contactMap, onAddNote, onAddEmail, onAddSms }) {
     )
   }
 
-  const tabs = [
-    {
-      label: 'Notes',
-      node: (
-        <TimelineSection
-          entries={contact.notes}
-          placeholder="Write a note"
-          actionLabel="Add Note"
-          onAdd={(payload) => onAddNote(contact.id, payload)}
-        />
-      ),
-    },
-    {
-      label: 'Emails',
-      node: (
-        <TimelineSection
-          entries={contact.emails}
-          placeholder="Email summary"
-          actionLabel="Add Email"
-          onAdd={(payload) => onAddEmail(contact.id, payload)}
-        />
-      ),
-    },
-    {
-      label: 'SMS',
-      node: (
-        <TimelineSection
-          entries={contact.sms}
-          placeholder="SMS update"
-          actionLabel="Add SMS"
-          onAdd={(payload) => onAddSms(contact.id, payload)}
-        />
-      ),
-    },
-  ]
-
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <MotionDiv initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <AppShell
         title="Contact Details"
         subtitle="View communication history and profile details."
@@ -179,7 +205,7 @@ function ContactDetailsPage({ contactMap, onAddNote, onAddEmail, onAddSms }) {
           </CardContent>
         </Card>
       </AppShell>
-    </motion.div>
+    </MotionDiv>
   )
 }
 

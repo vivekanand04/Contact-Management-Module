@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { Button, Card, CardContent, Chip, Stack, TextField, Typography } from '@mui/material'
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -8,12 +8,12 @@ function TimelineSection({ entries, placeholder, actionLabel, onAdd }) {
   const [content, setContent] = useState('')
   const [addedBy, setAddedBy] = useState('')
 
-  const submit = () => {
+  const submit = useCallback(() => {
     if (!content.trim() || !addedBy.trim()) return
     onAdd({ content: content.trim(), addedBy: addedBy.trim() })
     setContent('')
     setAddedBy('')
-  }
+  }, [addedBy, content, onAdd])
 
   return (
     <Stack spacing={2}>
@@ -72,4 +72,4 @@ function TimelineSection({ entries, placeholder, actionLabel, onAdd }) {
   )
 }
 
-export default TimelineSection
+export default memo(TimelineSection)

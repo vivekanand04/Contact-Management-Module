@@ -1,7 +1,10 @@
+import { memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Avatar, Card, CardContent, Chip, Grid, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react'
+
+const MotionDiv = motion.div
 
 function ContactCardGrid({ contacts, onEdit, onDelete }) {
   const navigate = useNavigate()
@@ -10,7 +13,7 @@ function ContactCardGrid({ contacts, onEdit, onDelete }) {
     <Grid container spacing={2}>
       {contacts.map((contact) => (
         <Grid item xs={12} sm={6} lg={4} key={contact.id}>
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <MotionDiv initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
             <Card>
               <CardContent sx={{ p: 2.5 }}>
                 <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1.5 }}>
@@ -74,11 +77,11 @@ function ContactCardGrid({ contacts, onEdit, onDelete }) {
                 </Stack>
               </CardContent>
             </Card>
-          </motion.div>
+          </MotionDiv>
         </Grid>
       ))}
     </Grid>
   )
 }
 
-export default ContactCardGrid
+export default memo(ContactCardGrid)

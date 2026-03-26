@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import {
   Box,
   Button,
@@ -14,6 +14,8 @@ import {
 import { motion } from 'framer-motion'
 import { validateContact } from '../../utils/validation'
 
+const MotionDiv = motion.div
+
 const initialState = {
   firstName: '',
   lastName: '',
@@ -27,33 +29,34 @@ function ContactFormDialog({ open, mode, initialData, onClose, onSubmit }) {
   const [values, setValues] = useState(initialData || initialState)
   const [errors, setErrors] = useState({})
 
-  useEffect(() => {
-    setValues(initialData || initialState)
-    setErrors({})
-  }, [initialData, open])
-
   const handleChange = (field) => (event) => {
     setValues((prev) => ({ ...prev, [field]: event.target.value }))
   }
 
-  const submit = () => {
+  const submit = useCallback(() => {
     const nextErrors = validateContact(values)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) return
 
+    const tags = Array.from(
+      new Set(
+        values.tags
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+      ),
+    )
+
     onSubmit({
       ...values,
-      tags: values.tags
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean),
+      tags,
     })
     onClose()
-  }
+  }, [onClose, onSubmit, values])
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 18 }}>
+      <MotionDiv initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 18 }}>
         <DialogTitle>{mode === 'edit' ? 'Edit Contact' : 'Add Contact'}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
@@ -113,15 +116,15 @@ function ContactFormDialog({ open, mode, initialData, onClose, onSubmit }) {
         </DialogContent>
         <DialogActions sx={{ p: 2.5 }}>
           <Button onClick={onClose}>Cancel</Button>
-          <motion.div whileTap={{ scale: 0.96 }}>
+          <MotionDiv whileTap={{ scale: 0.96 }}>
             <Button variant="contained" onClick={submit}>
               {mode === 'edit' ? 'Save Changes' : 'Create Contact'}
             </Button>
-          </motion.div>
+          </MotionDiv>
         </DialogActions>
-      </motion.div>
+      </MotionDiv>
     </Dialog>
   )
 }
 
-export default ContactFormDialog
+export default memo(ContactFormDialog)
