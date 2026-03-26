@@ -46,20 +46,20 @@ When a user clicks a contact, the app displays a dedicated details view that inc
 
 To ensure the application is highly optimized, scalable, and ready for future growth, several modern React performance and state-management techniques have been implemented. These optimizations help maintain a smooth and responsive UI even as the data size and feature set expand over time.
 
-⚡ Implemented Optimization Techniques
-🔹 React.memo
+###⚡ Implemented Optimization Techniques
+###a) React.memo
 Prevents unnecessary re-renders by memoizing components that receive unchanged props.
-🔹 useMemo
+###b) useMemo
 Optimizes performance by caching expensive computations such as filtered or derived data.
-🔹 useCallback
+###c) useCallback
 Maintains stable function references to avoid triggering unwanted re-renders in child components.
-🔹 Lazy Loading (React.lazy + Suspense)
+###d) Lazy Loading (React.lazy + Suspense)
 Improves initial load performance by loading heavy components (e.g., contact details view) only when required.
-🔹 Debouncing
+###e) Debouncing
 Enhances user experience by limiting frequent updates during rapid input (e.g., search and filters).
-🔹 Proper Keys in Lists
+###f) Proper Keys in Lists
 Ensures efficient DOM reconciliation and prevents rendering issues in dynamic lists.
-🔹 Redux Toolkit (State Management)
+###g) Redux Toolkit (State Management)
 Eliminates prop drilling by organizing global state (Contacts, Emails, SMS, Notes) into well-structured slices.
-🔹 localStorage Persistence
+###h) localStorage Persistence
 Provides data persistence by storing Contacts, Emails, SMS, and Notes locally, ensuring data remains intact across page refreshes and sessions.
