@@ -1,16 +1,56 @@
-# React + Vite
+# Contact Management Module
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project provides a practical contact management experience with a clean user flow: users can manage contacts, view detailed information, and capture related communication history (notes, emails, and SMS).
 
-Currently, two official plugins are available:
+## 1) Core Functionality
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Contact List
 
-## React Compiler
+- Display a list of contacts.
+- Add and edit contacts.
+- Each contact supports the following fields:
+  - First Name
+  - Last Name
+  - Email
+  - Phone Number
+  - Additional relevant fields (optional)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Contact Details Page
 
-## Expanding the ESLint configuration
+When a user clicks a contact, the app displays a dedicated details view that includes:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Contact information (the core contact fields)
+- Notes
+- Emails
+- SMS messages
+
+#### Notes Section
+
+- Add multiple notes for a contact.
+- Each note shows:
+  - Note content
+  - Added date/time
+  - Added by
+
+#### Emails Section
+
+- Show a list of emails sent to the contact.
+- Add new email entries.
+
+#### SMS Section
+
+- Show a list of SMS messages sent to the contact.
+- Add new SMS entries.
+
+## 2) Optimization Techniques
+
+To keep the UI responsive as the amount of data grows, the implementation uses several common React and state-management optimizations:
+
+- `React.memo`: prevents unnecessary re-renders for components that receive the same props.
+- `useMemo`: caches derived values (for example, filtered or transformed lists) to avoid repeated work.
+- `useCallback`: stabilizes callback references passed down to child components.
+- Lazy Loading (`React.lazy` + `Suspense`): defers loading of heavier pages/components (such as the contact details view) until they are needed.
+- Debouncing: reduces excessive updates during fast user interactions (such as typing in search or filter inputs).
+- Proper keys in lists: ensures React can efficiently reconcile list updates without rendering glitches.
+- Redux Toolkit for structured state: helps avoid prop drilling by organizing contacts and related entities (emails, SMS, and notes) into focused slices.
+- `localStorage` persistence: stores Contacts, Emails, SMS, and Notes so the user’s data remains available across browser refreshes and new sessions.
