@@ -11,6 +11,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
@@ -22,6 +23,7 @@ function ContactDetailsPage({ contactMap, onAddNote, onAddEmail, onAddSms }) {
   const { contactId } = useParams()
   const navigate = useNavigate()
   const [tab, setTab] = useState(0)
+  const isWideLayout = useMediaQuery('(min-width:801px)')
 
   const contact = useMemo(() => contactMap.get(contactId), [contactId, contactMap])
   if (!contact) {
@@ -87,27 +89,82 @@ function ContactDetailsPage({ contactMap, onAddNote, onAddEmail, onAddSms }) {
         }
       >
         <Card sx={{ mb: 3 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems={{ xs: 'flex-start', md: 'center' }}>
-              <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: 24 }}>
-                {contact.firstName.charAt(0)}
-              </Avatar>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="h5">
-                  {contact.firstName} {contact.lastName}
-                </Typography>
-                <Typography color="text.secondary">{contact.email}</Typography>
-                <Typography color="text.secondary">{contact.phone}</Typography>
-                {contact.company ? (
-                  <Typography color="text.secondary">Company: {contact.company}</Typography>
-                ) : null}
-              </Box>
-              <Stack direction="row" spacing={1} flexWrap="wrap">
-                {contact.tags?.map((tag) => (
-                  <Chip key={tag} label={tag} />
-                ))}
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+            {isWideLayout ? (
+              <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+                <Stack
+                  direction="row"
+                  spacing={4}
+                  sx={{
+                    width: '100%',
+                    minHeight: 140,
+                    alignItems: 'stretch',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Stack direction="column" spacing={1} alignItems="center" justifyContent="center" textAlign="center">
+                      <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: 24 }}>
+                        {contact.firstName.charAt(0)}
+                      </Avatar>
+                      <Typography variant="h5">
+                        {contact.firstName} {contact.lastName}
+                      </Typography>
+
+                      <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="center" sx={{ mt: 0.5 }}>
+                        {contact.tags?.map((tag) => (
+                          <Chip key={tag} label={tag} />
+                        ))}
+                      </Stack>
+                    </Stack>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      flex: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Stack direction="column" spacing={1} alignItems="center" justifyContent="center" textAlign="center">
+                      <Typography color="text.secondary">{contact.email}</Typography>
+                      <Typography color="text.secondary">{contact.phone}</Typography>
+                      {contact.company ? <Typography color="text.secondary">Company: {contact.company}</Typography> : null}
+                    </Stack>
+                  </Box>
+                </Stack>
               </Stack>
-            </Stack>
+            ) : (
+              <Stack direction="column" spacing={2}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Avatar sx={{ width: 54, height: 54, bgcolor: 'primary.main', fontSize: 22 }}>
+                    {contact.firstName.charAt(0)}
+                  </Avatar>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="h5">
+                      {contact.firstName} {contact.lastName}
+                    </Typography>
+                    <Typography color="text.secondary">{contact.email}</Typography>
+                    <Typography color="text.secondary">{contact.phone}</Typography>
+                    {contact.company ? <Typography color="text.secondary">Company: {contact.company}</Typography> : null}
+                  </Box>
+                </Stack>
+
+                <Stack direction="row" spacing={1} flexWrap="wrap">
+                  {contact.tags?.map((tag) => (
+                    <Chip key={tag} label={tag} />
+                  ))}
+                </Stack>
+              </Stack>
+            )}
           </CardContent>
         </Card>
 
