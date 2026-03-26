@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import {
   Avatar,
+  Box,
   Chip,
   IconButton,
   Stack,
@@ -14,7 +15,7 @@ import {
   Typography,
 } from '@mui/material'
 import { motion } from 'framer-motion'
-import { Pencil, Trash2, ChevronRight } from 'lucide-react'
+import { ChevronRight, MoveHorizontal, Pencil, Trash2 } from 'lucide-react'
 
 function ContactTable({ contacts, onEdit, onDelete }) {
   const navigate = useNavigate()
@@ -25,7 +26,7 @@ function ContactTable({ contacts, onEdit, onDelete }) {
         <TableHead>
           <TableRow>
             <TableCell>Contact</TableCell>
-            <TableCell>Email</TableCell>
+            <TableCell sx={{ width: { xs: '40%', md: '18%' }, maxWidth: { md: 220 } }}>Email</TableCell>
             <TableCell>Phone</TableCell>
             <TableCell>Company</TableCell>
             <TableCell>Tags</TableCell>
@@ -51,7 +52,34 @@ function ContactTable({ contacts, onEdit, onDelete }) {
                   </Typography>
                 </Stack>
               </TableCell>
-              <TableCell>{contact.email}</TableCell>
+              <TableCell sx={{ width: { xs: '40%', md: '18%' }, maxWidth: { md: 220 } }}>
+                <Stack
+                  direction="row"
+                  spacing={0.75}
+                  alignItems="center"
+                  sx={{
+                    minWidth: 0,
+                    '& .email-hint': { opacity: 0, transition: 'opacity 160ms ease' },
+                    '&:hover .email-hint': { opacity: 0.6 },
+                  }}
+                >
+                  <Tooltip title={contact.email} placement="top" arrow>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        minWidth: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        cursor: 'help',
+                      }}
+                    >
+                      {contact.email}
+                    </Typography>
+                  </Tooltip>
+                  <MoveHorizontal className="email-hint" size={14} />
+                </Stack>
+              </TableCell>
               <TableCell>{contact.phone}</TableCell>
               <TableCell>{contact.company || '-'}</TableCell>
               <TableCell>
@@ -62,21 +90,25 @@ function ContactTable({ contacts, onEdit, onDelete }) {
                 </Stack>
               </TableCell>
               <TableCell align="right">
-                <Tooltip title="View details">
-                  <IconButton onClick={() => navigate(`/contacts/${contact.id}`)}>
-                    <ChevronRight size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Edit contact">
-                  <IconButton onClick={() => onEdit(contact)}>
-                    <Pencil size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete contact">
-                  <IconButton color="error" onClick={() => onDelete(contact.id)}>
-                    <Trash2 size={18} />
-                  </IconButton>
-                </Tooltip>
+                <Stack direction="row" alignItems="center" sx={{ width: '100%' }}>
+                  <Tooltip title="Edit contact">
+                    <IconButton onClick={() => onEdit(contact)}>
+                      <Pencil size={18} />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete contact">
+                    <IconButton color="error" onClick={() => onDelete(contact.id)}>
+                      <Trash2 size={18} />
+                    </IconButton>
+                  </Tooltip>
+                  <Box sx={{ ml: 'auto' }}>
+                    <Tooltip title="View details">
+                      <IconButton onClick={() => navigate(`/contacts/${contact.id}`)} aria-label="View details">
+                        <ChevronRight size={18} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Stack>
               </TableCell>
             </motion.tr>
           ))}

@@ -32,28 +32,45 @@ function ContactCardGrid({ contacts, onEdit, onDelete }) {
                   {contact.company || 'No company'}
                 </Typography>
 
-                <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ minHeight: 32, mb: 1 }}>
-                  {contact.tags?.length
-                    ? contact.tags.map((tag) => <Chip key={tag} label={tag} size="small" sx={{ mb: 0.5 }} />)
-                    : <Typography variant="caption" color="text.secondary">No tags</Typography>}
-                </Stack>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  justifyContent="space-between"
+                  sx={{ flexWrap: 'wrap', rowGap: 1 }}
+                >
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    flexWrap="wrap"
+                    sx={{ minHeight: 32, flex: 1, minWidth: 0 }}
+                  >
+                    {contact.tags?.length ? (
+                      contact.tags.map((tag) => <Chip key={tag} label={tag} size="small" sx={{ mb: 0.5 }} />)
+                    ) : (
+                      <Typography variant="caption" color="text.secondary">
+                        No tags
+                      </Typography>
+                    )}
+                  </Stack>
 
-                <Stack direction="row" justifyContent="flex-end">
-                  <Tooltip title="View details">
-                    <IconButton onClick={() => navigate(`/contacts/${contact.id}`)}>
-                      <ChevronRight size={18} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Edit contact">
-                    <IconButton onClick={() => onEdit(contact)}>
-                      <Pencil size={18} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete contact">
-                    <IconButton color="error" onClick={() => onDelete(contact.id)}>
-                      <Trash2 size={18} />
-                    </IconButton>
-                  </Tooltip>
+                  <Stack direction="row" spacing={0.25} alignItems="center" sx={{ flexShrink: 0, ml: 'auto' }}>
+                    <Tooltip title="View details">
+                      <IconButton onClick={() => navigate(`/contacts/${contact.id}`)} aria-label="View details">
+                        <ChevronRight size={18} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit contact">
+                      <IconButton onClick={() => onEdit(contact)}>
+                        <Pencil size={18} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete contact">
+                      <IconButton color="error" onClick={() => onDelete(contact.id)}>
+                        <Trash2 size={18} />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
                 </Stack>
               </CardContent>
             </Card>

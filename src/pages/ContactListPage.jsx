@@ -3,14 +3,18 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
   InputAdornment,
   Stack,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
+  useMediaQuery,
 } from '@mui/material'
 import { AnimatePresence, motion } from 'framer-motion'
 import { LayoutGrid, List, Plus, Search } from 'lucide-react'
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
 import AppShell from '../components/layout/AppShell'
 import StatCards from '../components/contacts/StatCards'
 import ContactFormDialog from '../components/contacts/ContactFormDialog'
@@ -47,6 +51,7 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
   const [loading] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editContact, setEditContact] = useState(null)
+  const isXs = useMediaQuery('(max-width:599px)')
 
   const companies = useMemo(
     () => [...new Set(contacts.map((contact) => contact.company?.trim()).filter(Boolean))].sort(),
@@ -98,19 +103,27 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <AppShell
-        title="Contact Management"
+        title="Contact Hub"
         subtitle="Track people, conversations, and communication touchpoints."
         actions={
-          <Button
-            component={motion.button}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.95 }}
-            variant="contained"
-            startIcon={<Plus size={16} />}
-            onClick={openCreateDialog}
-          >
-            Add Contact
-          </Button>
+          isXs ? (
+            <Tooltip title="Add Contact">
+              <IconButton color="primary" onClick={openCreateDialog} size="small" aria-label="Add Contact">
+                <PersonAddAlt1Icon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Button
+              component={motion.button}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.95 }}
+              variant="contained"
+              startIcon={<Plus size={16} />}
+              onClick={openCreateDialog}
+            >
+              Add Contact
+            </Button>
+          )
         }
       >
         <StatCards contacts={contacts} />
@@ -124,44 +137,91 @@ function ContactListPage({ contacts, onCreate, onUpdate, onDelete }) {
           <ContactCharts contacts={contacts} />
         </Suspense>
 
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ mb: 2 }} alignItems={{ md: 'center' }}>
-          <TextField
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by name, email, phone..."
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search size={16} />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <ContactFilters
-            selectedCompany={selectedCompany}
-            selectedTag={selectedTag}
-            companies={companies}
-            tags={tags}
-            onCompanyChange={setSelectedCompany}
-            onTagChange={setSelectedTag}
-          />
-          <Button variant="text" onClick={clearFilters}>
-            Clear Filters
-          </Button>
-          <ToggleButtonGroup
-            exclusive
-            value={viewMode}
-            onChange={(_, next) => next && setViewMode(next)}
-            size="small"
+        <Stack spacing={2} sx={{ mb: 2 }}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ md: 'center' }} sx={{ width: '100%' }}>
+            <TextField
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search by name, email, phone..."
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={16} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
+              <ContactFilters
+                selectedCompany={selectedCompany}
+                selectedTag={selectedTag}
+                companies={companies}
+                tags={tags}
+                onCompanyChange={setSelectedCompany}
+                onTagChange={setSelectedTag}
+                showTag={false}
+              />
+            </Box>
+          </Stack>
+
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems={{ sm: 'center' }}
+            justifyContent="center"
+            sx={{ width: '100%', mt: 1 }}
           >
-            <ToggleButton value="table">
-              <List size={16} />
-            </ToggleButton>
-            <ToggleButton value="card">
-              <LayoutGrid size={16} />
-            </ToggleButton>
-          </ToggleButtonGroup>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1.5}
+              alignItems={{ xs: 'stretch', sm: 'center' }}
+              justifyContent="center"
+              sx={{ width: '100%' }}
+            >
+              <ContactFilters
+                selectedCompany={selectedCompany}
+                selectedTag={selectedTag}
+                companies={companies}
+                tags={tags}
+                onCompanyChange={setSelectedCompany}
+                onTagChange={setSelectedTag}
+                showCompany={false}
+              />
+
+              <Stack direction="row" spacing={1.75} alignItems="center" justifyContent="center" sx={{ flexWrap: 'wrap' }}>
+                {isXs ? (
+                  <Tooltip title="Add Contact">
+                    <IconButton color="primary" onClick={openCreateDialog} size="small" aria-label="Add Contact">
+                      <PersonAddAlt1Icon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Button variant="contained" onClick={openCreateDialog} startIcon={<Plus size={16} />}>
+                    Add Contact
+                  </Button>
+                )}
+
+                <Button variant="text" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+
+                <ToggleButtonGroup
+                  exclusive
+                  value={viewMode}
+                  onChange={(_, next) => next && setViewMode(next)}
+                  size="small"
+                >
+                  <ToggleButton value="table">
+                    <List size={16} />
+                  </ToggleButton>
+                  <ToggleButton value="card">
+                    <LayoutGrid size={16} />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Stack>
+            </Stack>
+          </Stack>
         </Stack>
 
         {loading ? (
